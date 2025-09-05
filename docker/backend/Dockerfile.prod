@@ -1,0 +1,24 @@
+FROM php:8.4-fpm
+
+# Dependencias Symfony
+RUN apt-get update && apt-get install -y \
+    git unzip libicu-dev libpq-dev libzip-dev zip \
+    && docker-php-ext-install intl pdo pdo_mysql zip opcache
+
+# Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+WORKDIR /var/www/html
+
+# Copiar código
+COPY . .
+
+# Dependencias optimizadas
+RUN composer install --no-dev --optimize-autoloader --classmap-authoritative
+
+# Caché prod
+RUN php bin/console cache:clear --env=prod
+
+RUN chown -R www-data:www-data /var/www/html/var
+
+CMD ["php-fpm"]

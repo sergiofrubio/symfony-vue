@@ -1,0 +1,20 @@
+# Imagen base con Node
+FROM node:lts-alpine
+
+# Directorio de trabajo
+WORKDIR /app
+
+# Copiar package.json y lock
+COPY package*.json ./
+
+# Instalar dependencias
+RUN npm install
+
+# Copiar el resto del código
+COPY . .
+
+# Exponer el puerto que usa Vue por defecto
+EXPOSE 5173
+
+# Comando para levantar la app
+CMD ["npm", "run", "dev", "--", "--host"]

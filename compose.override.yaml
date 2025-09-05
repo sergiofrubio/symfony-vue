@@ -1,0 +1,53 @@
+
+services:
+  # --- Backend desarrollo ---
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ../docker/backend/Dockerfile.dev
+    container_name: symfony_backend_dev
+    volumes:
+      - ./backend:/var/www/html
+    environment:
+      APP_ENV: dev
+      APP_DEBUG: 1
+    ports:
+      - "9000:9000"
+
+  # --- Nginx desarrollo ---
+  nginx:
+    container_name: symfony_nginx_dev
+    volumes:
+      - ./backend:/var/www/html
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "8000:80"
+    depends_on:
+      - backend
+
+  # --- Frontend desarrollo ---
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../docker/frontend/Dockerfile.dev
+    container_name: vue_frontend_dev
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    command: ["npm", "run", "dev", "--", "--host"]
+
+  # --- phpMyAdmin para desarrollo ---
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin_dev
+    restart: always
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      PMA_USER: symfony
+      PMA_PASSWORD: symfony
+    depends_on:
+      - db

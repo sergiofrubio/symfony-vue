@@ -1,0 +1,1 @@
+## Plantilla Symfony + Vue que usamos aquí en la empresa
