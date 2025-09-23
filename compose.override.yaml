@@ -8,6 +8,7 @@ services:
     container_name: symfony_backend_dev
     volumes:
       - ./backend:/var/www/html
+      - /var/www/html/vendor
     environment:
       APP_ENV: dev
       APP_DEBUG: 1
