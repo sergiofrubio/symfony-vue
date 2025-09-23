@@ -12,8 +12,8 @@ WORKDIR /var/www/html
 
 COPY . .
 
-RUN composer install --no-scripts --no-autoloader
+RUN composer install
 
-RUN chown -R www-data:www-data var
+RUN mkdir -p var && chown -R www-data:www-data var
 
 CMD ["php-fpm"]
