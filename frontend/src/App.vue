@@ -1,5 +1,5 @@
 <template lang="pug">
-router-view
+  router-view
 </template>
 
 <script setup>
@@ -7,10 +7,9 @@ router-view
 </script>
 
 <style>
-/* Estilos globales opcionales */
-body {
-  margin: 0;
-  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
-  background-color: #f5f7fa;
-}
+  #app {
+    font-family: "Roboto", sans-serif;
+    background-color: #f5f7fa;
+    min-height: 100vh;
+  }
 </style>

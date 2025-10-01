@@ -59,6 +59,7 @@ export default defineConfig({
   },
   server: {
     host: '0.0.0.0', // necesario en Docker
+    cors: true,
     watch: {
       usePolling: true, // fuerza a usar polling
       interval: 100     // opcional, frecuencia en ms

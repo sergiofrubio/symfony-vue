@@ -1,24 +1,55 @@
 <template lang="pug">
-el-container.login-container
-  el-form(:model="form" class="login-form" @submit.prevent="login")
-    el-form-item
-      el-input(v-model="form.username" placeholder="Usuario")
-    el-form-item
-      el-input(v-model="form.password" type="password" placeholder="Contraseña")
-    el-form-item
-      el-button(type="primary" native-type="submit" block) Iniciar sesión
+  el-container.login-container
+    el-form(:model="form" :rules="rules" ref="formRef" class="login-form")
+      div.logo-wrapper
+        img.logo(src="../assets/Aquiles-logo.png" alt="Logo")
+      el-alert(v-if="showError" title="Credenciales inválidas" type="error" class="login-alert")
+      el-form-item(prop="email")
+        el-input(v-model="form.email" placeholder="Usuario")
+      el-form-item(prop="password")
+        el-input(v-model="form.password" type="password" placeholder="Contraseña")
+      el-form-item
+        el-button(type="primary" @click="onSubmit" block) Iniciar sesión
 </template>
 
 <script setup>
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
+import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-const form = reactive({ username: '', password: '' })
+const formRef = ref(null)
+const showError = ref(false)
 
-const login = () => {
-  // lógica de autenticación
-  router.push('/dashboard')
+const form = reactive({
+  email: '',
+  password: ''
+})
+
+const rules = {
+  email: [
+    { required: true, message: 'Email is required', trigger: 'blur' },
+    { type: 'email', message: 'Invalid email', trigger: 'blur' }
+  ],
+  password: [
+    { required: true, message: 'Password is required', trigger: 'blur' },
+    { min: 4, message: 'Password must be at least 4 characters', trigger: 'blur' }
+  ]
+}
+
+const onSubmit = () => {
+  formRef.value.validate((valid) => {
+    if (valid) {
+      // Aquí normalmente llamarías a tu API para autenticar
+      if (form.email === 'test@example.com' && form.password === '1234') {
+        ElMessage.success('Login successful!')
+        showError.value = false
+        router.push('/home') // Redirige al home
+      } else {
+        showError.value = true
+      }
+    }
+  })
 }
 </script>
 
@@ -31,5 +62,22 @@ const login = () => {
 }
 .login-form {
   width: 300px;
+  padding: 20px;
+}
+.login-alert {
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.logo-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+  width: 100%;
+}
+.logo {
+  max-width: 220px;
+  width: 50%;
+  height: auto;
 }
 </style>
