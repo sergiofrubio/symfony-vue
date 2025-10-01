@@ -8,9 +8,8 @@ div.default-layout
     router-view
 </template>
 
-<script setup>
-import SidebarMenu from '@/components/layout/SidebarMenu.vue'
-import HeaderBar from '@/components/layout/HeaderBar.vue'
+<script lang="ts" setup>
+
 </script>
 
 <style lang="scss">

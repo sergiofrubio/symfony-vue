@@ -18,7 +18,7 @@
         p €4.500
 </template>
 
-<script setup>
+<script lang="ts" setup>
 // Datos estáticos por ahora
 </script>
 

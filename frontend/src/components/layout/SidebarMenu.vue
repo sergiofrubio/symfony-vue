@@ -19,7 +19,7 @@
     //-   el-menu-item(index="/users") Users List
 </template>
 
-<script setup>
+<script lang="ts" setup>
   import { ref, onMounted } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
 

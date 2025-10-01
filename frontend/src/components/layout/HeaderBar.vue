@@ -14,7 +14,7 @@
             el-dropdown-item(divided @click="logout") Cerrar sesión
 </template>
 
-<script setup>
+<script lang="ts" setup>
 import { reactive } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
@@ -27,13 +27,13 @@ const user = reactive({
   avatar: 'https://i.pravatar.cc/40'
 })
 
-function goProfile() {
+/* function goProfile() {
 
 }
 
 function settings() {
 
-}
+} */
 
 function logout() {
   ElMessage({
