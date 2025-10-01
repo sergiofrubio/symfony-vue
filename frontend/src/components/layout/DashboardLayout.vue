@@ -1,11 +1,11 @@
 <template lang="pug">
-div.default-layout
-  aside.sidebar
-    SidebarMenu
-  header.header
-    HeaderBar
-  main.content
-    router-view
+  div.default-layout
+    aside.sidebar
+      SidebarMenu
+    header.header
+      HeaderBar
+    main.content
+      router-view
 </template>
 
 <script lang="ts" setup>

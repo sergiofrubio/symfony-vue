@@ -2,7 +2,7 @@
   router-view
 </template>
 
-<script setup>
+<script lang="ts" setup>
 // No se necesita lógica aquí, ya que todo se maneja por rutas
 </script>
 
