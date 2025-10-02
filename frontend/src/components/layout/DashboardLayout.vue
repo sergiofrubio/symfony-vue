@@ -8,28 +8,26 @@
       router-view
 </template>
 
-<script lang="ts" setup>
-
-</script>
+<script lang="ts" setup></script>
 
 <style lang="scss">
-.default-layout{
+.default-layout {
   display: grid;
-  grid-template-areas: "sidebar header" "sidebar content";
+  grid-template-areas: 'sidebar header' 'sidebar content';
   grid-template-columns: 250px 1fr;
   grid-template-rows: 60px 1fr;
   height: 100vh;
 }
-.sidebar{
+.sidebar {
   grid-area: sidebar;
   background-color: #1f2d3d;
 }
-.header{
+.header {
   grid-area: header;
   background-color: #fff;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
-.content{
+.content {
   grid-area: content;
   padding: 20px;
   overflow-y: auto;

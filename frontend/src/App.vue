@@ -7,9 +7,9 @@
 </script>
 
 <style>
-  #app {
-    font-family: "Roboto", sans-serif;
-    background-color: #f5f7fa;
-    min-height: 100vh;
-  }
+#app {
+  font-family: 'Roboto', sans-serif;
+  background-color: #f5f7fa;
+  min-height: 100vh;
+}
 </style>

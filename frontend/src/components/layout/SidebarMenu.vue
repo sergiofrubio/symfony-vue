@@ -20,45 +20,45 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, onMounted } from 'vue'
-  import { useRoute, useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
-  const route = useRoute()
-  const router = useRouter()
-  const activeMenu = ref(route.path)
+const route = useRoute()
+const router = useRouter()
+const activeMenu = ref(route.path)
 
-  onMounted(() => {
-    // Escucha cambios de ruta
-    router.afterEach((to) => {
-      activeMenu.value = to.path
-    })
+onMounted(() => {
+  // Escucha cambios de ruta
+  router.afterEach((to) => {
+    activeMenu.value = to.path
   })
+})
 </script>
 
 <style>
-  .logo-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 60px;
-    padding: 10px;
-    /* background-color: #1f2a38; */
-  }
+.logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 60px;
+  padding: 10px;
+  /* background-color: #1f2a38; */
+}
 
-  .logo {
-    width: 30px;
-    height: 30px;
-    margin-right: 10px;
-  }
+.logo {
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
+}
 
-  .logo-text {
-    font-size: 18px;
-    font-weight: bold;
-    color: #fff;
-  }
+.logo-text {
+  font-size: 18px;
+  font-weight: bold;
+  color: #fff;
+}
 
-  .el-menu-vertical-demo {
-    flex: 1;
-    border-right: none;
-  }
+.el-menu-vertical-demo {
+  flex: 1;
+  border-right: none;
+}
 </style>

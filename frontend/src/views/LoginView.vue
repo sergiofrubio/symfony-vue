@@ -12,7 +12,7 @@
         el-button(type="primary" @click="onSubmit" block) Iniciar sesión
 </template>
 
-<script lang="ts"setup>
+<script lang="ts" setup>
 import { reactive, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
@@ -23,18 +23,18 @@ const showError = ref(false)
 
 const form = reactive({
   email: '',
-  password: ''
+  password: '',
 })
 
 const rules = {
   email: [
     { required: true, message: 'Email is required', trigger: 'blur' },
-    { type: 'email', message: 'Invalid email', trigger: 'blur' }
+    { type: 'email', message: 'Invalid email', trigger: 'blur' },
   ],
   password: [
     { required: true, message: 'Password is required', trigger: 'blur' },
-    { min: 4, message: 'Password must be at least 4 characters', trigger: 'blur' }
-  ]
+    { min: 4, message: 'Password must be at least 4 characters', trigger: 'blur' },
+  ],
 }
 
 const onSubmit = () => {

@@ -1,4 +1,3 @@
-
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
@@ -20,11 +19,11 @@ app.mount('#app')
 
 const updateSW = registerSW({
   onNeedRefresh() {
-    if (confirm("Nueva versión disponible. ¿Actualizar?")) {
+    if (confirm('Nueva versión disponible. ¿Actualizar?')) {
       updateSW(true)
     }
   },
   onOfflineReady() {
-    console.log("La app está lista para usarse offline")
-  }
+    console.log('La app está lista para usarse offline')
+  },
 })

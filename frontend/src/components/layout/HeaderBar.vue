@@ -24,7 +24,7 @@ const router = useRouter()
 // Datos de prueba
 const user = reactive({
   name: 'John Doe',
-  avatar: 'https://i.pravatar.cc/40'
+  avatar: 'https://i.pravatar.cc/40',
 })
 
 /* function goProfile() {
@@ -38,7 +38,7 @@ function settings() {
 function logout() {
   ElMessage({
     message: 'Sesión cerrada',
-    type: 'success'
+    type: 'success',
   })
   router.push('/login')
 }
@@ -58,7 +58,7 @@ function logout() {
 .header-left .logo {
   font-weight: bold;
   font-size: 20px;
-  color: #409EFF;
+  color: #409eff;
 }
 
 .header-right {
@@ -81,7 +81,6 @@ function logout() {
 }
 
 .el-dropdown-menu__item {
-  font-family: "Roboto", sans-serif;
+  font-family: 'Roboto', sans-serif;
 }
-
 </style>
