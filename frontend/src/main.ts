@@ -3,8 +3,7 @@ import { createPinia } from 'pinia'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import App from './App.vue'
 import router from './router'
-
-import { registerSW } from 'virtual:pwa-register'
+// import { registerSW } from 'vite-plugin-pwa/'
 
 const app = createApp(App)
 
@@ -17,7 +16,7 @@ app.use(router)
 
 app.mount('#app')
 
-const updateSW = registerSW({
+/* const updateSW = registerSW({
   onNeedRefresh() {
     if (confirm('Nueva versión disponible. ¿Actualizar?')) {
       updateSW(true)
@@ -26,4 +25,4 @@ const updateSW = registerSW({
   onOfflineReady() {
     console.log('La app está lista para usarse offline')
   },
-})
+}) */

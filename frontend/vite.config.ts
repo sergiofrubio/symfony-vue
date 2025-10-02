@@ -19,6 +19,7 @@ export default defineConfig({
       resolvers: [ElementPlusResolver()],
     }),
     VitePWA({
+      injectRegister: 'auto',
       registerType: 'autoUpdate', // actualiza el service worker automáticamente
       devOptions: {
         enabled: true // 🔥 permite usar PWA en desarrollo
