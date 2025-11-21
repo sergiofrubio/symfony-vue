@@ -1,1 +1,1 @@
-## Plantilla Symfony + Vue que usamos aquí en la empresa
+<!--## Plantilla Symfony + Vue que usamos aquí en la empresa -->
