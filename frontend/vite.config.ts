@@ -66,7 +66,7 @@ export default defineConfig({
       interval: 100     // opcional, frecuencia en ms
     },
      proxy: {
-      '/api': 'https://localhost:8443', // todas las peticiones que empiecen con /api van al backend
+      '/api': 'http://localhost:8000', // todas las peticiones que empiecen con /api van al backend
     }
   }
 })

@@ -40,14 +40,36 @@ const rules = {
 const onSubmit = () => {
   formRef.value.validate((valid) => {
     if (valid) {
-      // Aquí normalmente llamarías a tu API para autenticar
-      if (form.email === 'test@example.com' && form.password === '1234') {
-        ElMessage.success('Login successful!')
-        showError.value = false
-        router.push('/home') // Redirige al home
-      } else {
-        showError.value = true
-      }
+      fetch('/api/login_check', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: form.email,
+          password: form.password,
+        }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            showError.value = true
+            throw new Error('Login fallido')
+          }
+          return response.json()
+        })
+        .then((data) => {
+          if (data.token) {
+            localStorage.setItem('jwt_token', data.token)
+            ElMessage.success('¡Inicio de sesión exitoso!')
+            showError.value = false
+            router.push('/home')
+          } else {
+            showError.value = true
+          }
+        })
+        .catch(() => {
+          showError.value = true
+        })
     }
   })
 }
