@@ -31,6 +31,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?bool $is_active = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTime $last_login = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -110,5 +116,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function eraseCredentials(): void
     {
         // @deprecated, to be removed when upgrading to Symfony 8
+    }
+
+    public function isActive(): ?bool
+    {
+        return $this->is_active;
+    }
+
+    public function setIsActive(?bool $is_active): static
+    {
+        $this->is_active = $is_active;
+
+        return $this;
+    }
+
+    public function getLastLogin(): ?\DateTime
+    {
+        return $this->last_login;
+    }
+
+    public function setLastLogin(?\DateTime $last_login): static
+    {
+        $this->last_login = $last_login;
+
+        return $this;
     }
 }
