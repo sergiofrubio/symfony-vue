@@ -7,7 +7,7 @@
 </script>
 
 <style>
-#app {
+body {
   font-family: 'Roboto', sans-serif;
   background-color: #f5f7fa;
   min-height: 100vh;
