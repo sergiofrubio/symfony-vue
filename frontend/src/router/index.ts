@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useAuthStore } from '@/modules/auth/store/useAuthStore'
 import Login from '@/modules/auth/views/LoginView.vue'
 import DashboardLayout from '@/components/layout/DashboardLayout.vue'
 import Home from '@/modules/home/views/HomeView.vue'
@@ -32,15 +33,15 @@ const router = createRouter({
 })
 
 router.beforeEach((to) => {
-  const token = localStorage.getItem('jwt_token')
+  const auth = useAuthStore()
 
   // Rutas protegidas
-  if (to.meta.requiresAuth && !token) {
+  if (to.meta.requiresAuth && !auth.isAuthenticated) {
     return { path: '/login', query: { redirect: to.fullPath } }
   }
 
   // Si ya está loggeado, evitar volver al login
-  if (to.path === '/login' && token) {
+  if (to.path === '/login' && auth.isAuthenticated) {
     return { path: '/home' }
   }
 })

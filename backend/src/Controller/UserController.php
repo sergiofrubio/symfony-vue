@@ -82,4 +82,22 @@ class UserController extends AbstractController
             'limit' => $limit,
         ]);
     }
+
+    #[Route('/me', name: 'api_me', methods: ['GET'])]
+    public function me(): JsonResponse
+    {
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            return new JsonResponse(['error' => 'Unauthenticated'], 401);
+        }
+
+        return new JsonResponse([
+            'id' => $user->getId(),
+            'email' => $user->getEmail(),
+            'roles' => $user->getRoles(),
+            'is_active' => $user->isActive(),
+            'last_login' => $user->getLastLogin() ? $user->getLastLogin()->format(\DateTime::ATOM) : null,
+        ]);
+    }
 }

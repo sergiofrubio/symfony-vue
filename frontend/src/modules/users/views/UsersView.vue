@@ -57,6 +57,8 @@ div.user-view
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { getAuthHeaders } from '@/api/auth'
+import { useAuthStore } from '@/modules/auth/store/useAuthStore'
 
 type User = {
   id: number
@@ -66,6 +68,7 @@ type User = {
   last_login: string | null
 }
 
+const auth = useAuthStore()
 const router = useRouter()
 const users = ref<User[]>([])
 const loading = ref(false)
@@ -80,18 +83,18 @@ const rolesOptions = ref<string[]>(['ROLE_USER', 'ROLE_ADMIN'])
 
 let searchTimer: number | undefined
 
-function getAuthHeaders(): Record<string, string> {
-  const token = localStorage.getItem('jwt_token')
-  if (!token) {
-    // si no hay token, redirige a login
-    router.push('/login')
-    return {}
-  }
-  return {
-    Authorization: `Bearer ${token}`,
-    Accept: 'application/json',
-  }
-}
+// function getAuthHeaders(): Record<string, string> {
+//   const token = localStorage.getItem('jwt_token')
+//   if (!token) {
+//     // si no hay token, redirige a login
+//     router.push('/login')
+//     return {}
+//   }
+//   return {
+//     Authorization: `Bearer ${token}`,
+//     Accept: 'application/json',
+//   }
+// }
 
 function buildQueryParams() {
   const params: Record<string, string> = {}
@@ -171,6 +174,7 @@ async function onDelete(row: User) {
       },
     })
     if (res.status === 401) {
+      auth.logout()
       router.push('/login')
       return
     }

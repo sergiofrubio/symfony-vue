@@ -43,6 +43,10 @@
 import { reactive, ref, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
+// import { getAuthHeaders } from '@/api/auth'
+import { useAuthStore } from '@/modules/auth/store/useAuthStore'
+
+const auth = useAuthStore()
 
 const router = useRouter()
 
@@ -76,8 +80,7 @@ function goProfile() {
 }
 
 function logout() {
-  localStorage.removeItem('jwt_token')
-  sessionStorage.removeItem('jwt_token')
+  auth.logout()
   ElMessage({
     message: 'Sesión cerrada',
     type: 'success',
