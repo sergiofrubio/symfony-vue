@@ -3,7 +3,7 @@ import { useAuthStore } from '@/modules/auth/store/useAuthStore'
 import Login from '@/modules/auth/views/LoginView.vue'
 import DashboardLayout from '@/components/layout/DashboardLayout.vue'
 import Home from '@/modules/home/views/HomeView.vue'
-import Users from '@/modules/users/views/UsersView.vue'
+import Users from '@/modules/users/views/index.vue'
 import Profile from '@/modules/auth/views/ProfileView.vue'
 
 const router = createRouter({

@@ -2,6 +2,7 @@ import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
+import VueInspector from 'vite-plugin-vue-inspector'
 import { VitePWA } from 'vite-plugin-pwa'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
@@ -12,6 +13,7 @@ export default defineConfig({
   plugins: [
     vue(),
     vueDevTools(),
+    VueInspector(),
     AutoImport({
       resolvers: [ElementPlusResolver()],
     }),
