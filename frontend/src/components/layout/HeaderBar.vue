@@ -1,73 +1,40 @@
 <template lang="pug">
-  div.header-bar
-    div.header-left
-      span.logo Panel de control
-    div.header-right
-      //- Notificaciones
+div.header-bar
+  .header-inner
+    .header-spacer
+    .header-actions
       el-dropdown(trigger="click" @command="onNotifCommand")
-        div.custom-trigger-notif
-          el-badge(:value="unreadCount" class="notif-badge" v-if="unreadCount > 0")
+        div.bell-button(:title="unreadCount ? `${unreadCount} no leídas` : 'Notificaciones'")
+          el-badge(:value="unreadCount" v-if="unreadCount > 0" class="notif-badge")
             el-icon
               BellFilled
           el-icon(v-else)
             Bell
         template(#dropdown)
           el-dropdown-menu
-            el-dropdown-item(disabled v-if="notifications.length === 0" class="notif-empty")
-              | No hay notificaciones
-            el-dropdown-item(
-              v-for="n in notifications"
-              :key="n.id"
-              :command="n.id"
-              class="notif-item"
-            )
+            el-dropdown-item(disabled v-if="notifications.length === 0" class="notif-empty") No hay notificaciones
+            el-dropdown-item(v-for="n in notifications" :key="n.id" :command="n.id" class="notif-item")
               .notif-title {{ n.title }}
               .notif-meta {{ formatDate(n.date) }}
-              el-tag(v-if="!n.read" size="mini" type="danger" style="margin-left:6px" plain) Nuevo
-            el-dropdown-item(divided @click="markAllRead")
-              | Marcar todas como leídas
-
-      //- Usuario
-      el-dropdown
-        div.custom-trigger
-          el-avatar(size="small" :src="user.avatar")
-          span.username {{ user.name }}
-        template(#dropdown)
-          el-dropdown-menu
-            el-dropdown-item(@click="goProfile") Perfil
-            //- el-dropdown-item(@click="settings") Configuración
-            el-dropdown-item(class="logout-item" divided @click="logout") Cerrar sesión
+              el-tag(v-if="!n.read" size="mini" type="danger" plain) Nuevo
+            el-dropdown-item(divided @click="markAllRead") Marcar todas como leídas
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
-// import { getAuthHeaders } from '@/api/auth'
-import { useAuthStore } from '@/modules/auth/store/useAuthStore'
 
-const auth = useAuthStore()
+type Notification = { id: number; title: string; body?: string; date: string; read: boolean; url?: string }
 
 const router = useRouter()
+const notifications = ref<Notification[]>([])
 
-const user = reactive({
-  name: 'John Doe',
-  avatar: 'https://i.pravatar.cc/40',
-})
-
-type Notification = {
-  id: number
-  title: string
-  body?: string
-  date: string
-  read: boolean
-  url?: string
-}
-
-const notifications = ref<Notification[]>([
+// ejemplo base
+notifications.value = [
   { id: 1, title: 'Nueva orden recibida', date: new Date().toISOString(), read: false, url: '/orders/123' },
   { id: 2, title: 'Backup completado', date: new Date(Date.now() - 3600_000).toISOString(), read: true },
-])
+]
 
 const unreadCount = computed(() => notifications.value.filter(n => !n.read).length)
 
@@ -75,31 +42,14 @@ function formatDate(v: string) {
   try { return new Date(v).toLocaleString() } catch { return v }
 }
 
-function goProfile() {
-  router.push('/profile')
-}
-
-function logout() {
-  auth.logout()
-  ElMessage({
-    message: 'Sesión cerrada',
-    type: 'success',
-  })
-  router.push('/login')
-}
-
-// Manejo de notificaciones
 function onNotifCommand(command: string | number) {
   const id = Number(command)
   if (Number.isNaN(id)) return
   const n = notifications.value.find(x => x.id === id)
   if (!n) return
   n.read = true
-  if (n.url) {
-    router.push(n.url)
-  } else {
-    ElMessage({ message: n.title, type: 'info' })
-  }
+  if (n.url) router.push(n.url)
+  else ElMessage({ message: n.title, type: 'info' })
 }
 
 function markAllRead() {
@@ -117,89 +67,63 @@ async function fetchNotificationsFromApi() {
       if (Array.isArray(data)) notifications.value = data
     }
   } catch (e) {
-    // no mostrar error en header
+    // silencioso
   }
 }
 
 onMounted(fetchNotificationsFromApi)
 </script>
 
-<style>
+<style scoped>
 .header-bar {
+  height: 72px;
+  width: 100%;
+  box-sizing: border-box;
+  background: transparent; /* sin color, sólo botones visibles */
   display: flex;
+  align-items: center;
+  padding: 0 16px;
+  /* box-shadow: 0 8px 20px rgba(15,23,42,0.06); */
+  /* border-bottom: 1px solid rgba(15,23,42,0.04); */
+}
+
+.header-inner {
+  width: 100%;
+  display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: center;
-  height: 60px;
-  padding: 0 20px;
-  background-color: #fff;
-  border-bottom: 1px solid #ebeef5;
 }
 
-.header-left .logo {
-  font-weight: bold;
-  font-size: 20px;
-  color: #409eff;
-}
+.header-spacer { width: 220px; /* coincide con el ancho del sidebar para evitar solapamiento visual */ }
 
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-}
+.header-actions { display:flex; align-items:center; justify-content:flex-end }
 
-.custom-trigger {
-  display: flex;
+.bell-button {
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  width: 56px; /* aumentado para mayor destaque */
+  height: 56px; /* aumentado para mayor destaque */
+  border-radius: 12px;
+  background: transparent; /* header sigue transparente */
   cursor: pointer;
+  transition: box-shadow .18s ease, background .12s ease, transform .12s ease;
 }
 
-.custom-trigger-notif {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-  padding: 6px;
+.bell-button:hover {
+  background: #ffffff; /* destaca sobre header transparente */
+  box-shadow: 0 10px 24px rgba(15,23,42,0.08);
+  transform: translateY(-1px);
 }
 
-.username {
-  font-weight: 500;
-  color: #333;
-}
+.notif-badge { margin-right: 6px }
 
-.el-dropdown-menu__item.logout-item {
-  color: #f56c6c;
-}
+.bell-button .el-icon, .bell-button svg { width: 26px; height: 26px }
 
-.el-dropdown-menu__item.logout-item:hover {
-  background-color: #f56c6c;
-  color: #fff;
-}
+.notif-item { padding: 8px 12px; display:flex; flex-direction:column; gap:6px }
+.notif-title { font-weight: 600; font-size: 13px }
+.notif-meta { font-size: 12px; color: #6b7280 }
+.notif-empty { color: #9ca3af; cursor: default; padding: 8px 12px }
 
-.notif-item {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 8px 12px;
-}
-
-.notif-title {
-  font-weight: 500;
-  font-size: 13px;
-}
-
-.notif-meta {
-  font-size: 11px;
-  color: #999;
-  margin-top: 4px;
-}
-
-.notif-empty {
-  color: #666;
-  cursor: default;
-}
-
-.notif-badge {
-  margin-right: 6px;
-}
+.el-dropdown-menu { min-width: 240px }
 </style>

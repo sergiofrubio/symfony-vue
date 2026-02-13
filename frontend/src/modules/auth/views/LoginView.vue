@@ -1,7 +1,7 @@
 <template lang="pug">
   el-container.login-container
     .bg-decor
-    el-card.login-card.shadow
+    el-card.login-card.shadow(v-loading="loading")
       .login-header
         img.logo(src="../assets/Aquiles-logo.png" alt="Logo")
         h2.title Bienvenido de vuelta
@@ -22,7 +22,7 @@
             //- a.forgot(@click.prevent="onForgot") ¿Olvidaste tu contraseña?
 
         el-form-item
-          el-button(type="primary" @click="onSubmit" class="login-button" block) Iniciar sesión
+          el-button(type="primary" @click="onSubmit" class="login-button" block :loading="loading" :disabled="loading") Iniciar sesión
 
         //- .social-section
         //-   p.social-text O inicia con
@@ -55,43 +55,51 @@ const rules = {
   password: [{ required: true, message: 'La contraseña es requerida', trigger: 'blur' }, { min: 4, message: 'La contraseña debe tener al menos 4 caracteres', trigger: 'blur' }],
 }
 
-const onSubmit = () => {
-  formRef.value.validate((valid: boolean) => {
-    if (valid) {
-      fetch('/api/login_check', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: form.email, password: form.password }),
-      })
-        .then((response) => {
-          if (!response.ok) {
-            showError.value = true
-            throw new Error('Login fallido')
-          }
-          return response.json()
-        })
-        .then(async (data) => {
-          if (data.token) {
-            try {
-              auth.setToken(data.token)
-              await auth.fetchMe()
-              ElMessage.success('¡Inicio de sesión exitoso!')
-              showError.value = false
-              router.push('/home')
-            } catch (err) {
-              auth.logout()
-              showError.value = true
-              ElMessage.error('No se pudo obtener datos del usuario')
-            }
-          } else {
-            showError.value = true
-          }
-        })
-        .catch(() => {
-          showError.value = true
-        })
+const loading = ref(false)
+
+const onSubmit = async () => {
+  try {
+    await formRef.value.validate()
+  } catch {
+    showError.value = true
+    return
+  }
+
+  loading.value = true
+  showError.value = false
+  try {
+    const response = await fetch('/api/login_check', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: form.email, password: form.password }),
+    })
+
+    if (!response.ok) {
+      showError.value = true
+      throw new Error('Login fallido')
     }
-  })
+
+    const data = await response.json()
+    if (data.token) {
+      try {
+        auth.setToken(data.token)
+        await auth.fetchMe()
+        ElMessage.success('¡Inicio de sesión exitoso!')
+        showError.value = false
+        router.push('/home')
+      } catch (err) {
+        auth.logout()
+        showError.value = true
+        ElMessage.error('No se pudo obtener datos del usuario')
+      }
+    } else {
+      showError.value = true
+    }
+  } catch (e) {
+    // showError ya establecido
+  } finally {
+    loading.value = false
+  }
 }
 
 const onForgot = () => {
