@@ -1,21 +1,14 @@
 <template lang="pug">
   div.sidebar-inner
     div.logo-container
-      img.logo(src="/favicon.ico" alt="Logo")
+      img.logo(src="@/assets/logo.svg" alt="Logo")
       //- span.logo-text MyAdmin
-    el-menu(:default-active="activeMenu", class="el-menu-vertical-demo", background-color="transparent", text-color="#6b7280", active-text-color="#111827", router)
-      el-menu-item(index="/home")
+    el-menu(:default-active="activeMenu" class="el-menu-vertical-demo" background-color="transparent" text-color="#6b7280" active-text-color="#111827" router)
+      // Generar items dinámicamente desde las rutas del router
+      el-menu-item(v-for="item in menuItems" :key="item.path" :index="item.path")
         el-icon
-          House
-        span Dashboard
-      el-menu-item(index="/users")
-        el-icon
-          User
-        span Usuarios
-      el-menu-item(index="/invoices")
-        el-icon
-          Document
-        span Facturas
+          component(:is="icons[item.icon]" )
+        span {{ item.title }}
     div.sidebar-footer
       // Usuario (avatar + nombre) como botón desplegable
       el-dropdown(trigger="click")
@@ -29,10 +22,12 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, reactive } from 'vue'
+import { ref, onMounted, reactive, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { useAuthStore } from '@/modules/auth/store/useAuthStore'
+import userAvatar from '@/assets/user.png'
+import * as Icons from '@element-plus/icons-vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -40,7 +35,32 @@ const activeMenu = ref(route.path)
 
 const auth = useAuthStore()
 
-const user = reactive({ name: 'John Doe', avatar: '/user.png' })
+const user = reactive({ name: 'John Doe', avatar: userAvatar })
+
+const icons: Record<string, any> = Icons as any
+
+const menuItems = computed(() => {
+  const all = router.getRoutes()
+  const items = all
+    .filter(r => r.meta && (r.meta as any).icon && (r.meta as any).requiresAuth)
+    .map(r => ({ path: r.path, name: r.name, meta: r.meta }))
+    // remove duplicates and only root-level menu entries
+    .filter((v, i, a) => v.path && a.findIndex(x => x.path === v.path) === i && v.path !== '/' )
+
+  // filtrar por roles
+  const userRoles = (auth.user && auth.user.roles) ? auth.user.roles.map((rr: string) => rr.toLowerCase().replace(/^role_/, '')) : []
+  const isAdmin = userRoles.includes('admin') || userRoles.includes('role_admin')
+
+  return items
+    .filter(it => {
+      const roles = (it.meta && (it.meta as any).roles) as string[] | undefined
+      if (!roles) return true
+      if (isAdmin) return true
+      const allowed = roles.map(r => r.toLowerCase())
+      return userRoles.some((ur: string) => allowed.includes(ur))
+    })
+    .map(it => ({ path: it.path, title: (it.meta && (it.meta as any).title) || String(it.name), icon: (it.meta && (it.meta as any).icon) || 'Document' }))
+})
 
 function goProfile() {
   router.push('/profile')

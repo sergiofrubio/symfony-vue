@@ -4,6 +4,7 @@ import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import App from './App.vue'
 import router from './router'
 // import { registerSW } from 'vite-plugin-pwa/'
+import './styles/index.scss'
 
 const app = createApp(App)
 

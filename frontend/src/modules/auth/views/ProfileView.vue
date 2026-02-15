@@ -44,6 +44,7 @@ div.profile-view
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import userAvatar from '@/assets/user.png'
 
 const router = useRouter()
 const formRef = ref<any>(null)
@@ -64,7 +65,7 @@ const password = ref('')
 const passwordConfirm = ref('')
 const avatarFile = ref<File | null>(null)
 const avatarPreview = ref<string | null>(null)
-const avatarPhoto = "/user.png" // imagen por defecto si no hay avatar
+const avatarPhoto = userAvatar // imagen por defecto si no hay avatar
 
 const rules = {
   name: [{ required: true, message: 'Nombre requerido', trigger: 'blur' }],

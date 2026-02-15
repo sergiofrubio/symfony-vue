@@ -1,9 +1,9 @@
 <template lang="pug">
   el-container.login-container
     .bg-decor
-    el-card.login-card.shadow(v-loading="loading")
+    el-card.login-card.shadow()
       .login-header
-        img.logo(src="../assets/Aquiles-logo.png" alt="Logo")
+        img.logo(src="@/assets/logo.svg" alt="Logo")
         h2.title Bienvenido de vuelta
         p.subtitle Ingresa a tu cuenta para continuar
 

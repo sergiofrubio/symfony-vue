@@ -1,0 +1,63 @@
+@forward 'element-plus/theme-chalk/src/mixins/config.scss' with (
+  $namespace: 'el'
+);
+
+@use 'element-plus/theme-chalk/src/index.scss' as *;
+
+$logo-green: #41b883;
+$logo-dark:  #34495e;
+
+// Escala primaria (variaciones útiles)
+$primary-100: #f3fbf8;
+$primary-80:  #dff6ea;
+$primary-60:  #a9e5c2;
+$primary-40:  $logo-green; // color principal
+$primary-20:  #318f66;
+$primary-10:  #266944;
+
+// Tonos oscuros / neutros
+$dark-100: #0f1a22;
+$dark-80:  $logo-dark; // secundario del logo
+$dark-60:  #3f5562;
+$dark-40:  #506a78;
+
+// Colores semánticos (puedes ajustarlos)
+$success-color: $logo-green;
+$info-color:    $logo-dark;
+$warning-color: #f59e0b; // ámbar
+$danger-color:  #dc2626; // rojo
+
+// Variables para Element Plus (SCSS). Si compilas Element Plus con Sass,
+// asigna estos valores a las variables que use tu setup.
+$el-color-primary:             $logo-green;
+$el-color-primary-hover:       darken($el-color-primary, 6%);
+$el-color-primary-active:      darken($el-color-primary, 12%);
+$el-color-primary-disabled:    lighten($el-color-primary, 34%);
+
+$el-text-color-primary:        $dark-80;
+$el-bg-color-base:             #ffffff;
+$el-border-color-base:         lighten($dark-80, 30%);
+
+// Exportar también como CSS custom properties para uso runtime (opcional)
+:root {
+  --brand-primary: #{$logo-green};
+  --brand-primary-20: #318f66;
+  --brand-primary-40: #{$primary-40};
+  --brand-dark: #{$logo-dark};
+  --color-success: #{$success-color};
+  --color-info: #{$info-color};
+  --color-warning: #{$warning-color};
+  --color-danger: #{$danger-color};
+}
+
+// Helpers (opcional): mixins para botones o fondos
+@mixin btn-primary($bg: $el-color-primary, $color: #fff) {
+  background-color: $bg;
+  color: $color;
+  &:hover { background-color: $el-color-primary-hover; }
+  &:active { background-color: $el-color-primary-active; }
+}
+
+// Importar el tema principal (chalk)
+
+

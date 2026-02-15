@@ -14,30 +14,48 @@ const router = createRouter({
     {
       path: '/home',
       component: DashboardLayout,
-      meta: { requiresAuth: true },
-      children: [{ path: '', name: 'Home', component: Home }],
+      children: [{ path: '', name: 'Home', component: Home, meta: { requiresAuth: true, roles: ['admin','user','manager'], icon: 'House', title: 'Dashboard' } }],
     },
      {
       path: '/users',
       component: DashboardLayout,
-      meta: { requiresAuth: true },
-      children: [{ path: '', name: 'Users', component: Users }],
+      children: [{ path: '', name: 'Users', component: Users, meta: { requiresAuth: true, roles: ['admin'], icon: 'User', title: 'Usuarios' } }],
     },
     {
       path: '/profile',
       component: DashboardLayout,
-      meta: { requiresAuth: true },
-      children: [{ path: '', name: 'Profile', component: Profile }],
+      children: [{ path: '', name: 'Profile', component: Profile, meta: { requiresAuth: true, roles: ['admin','user','manager'], icon: 'User', title: 'Perfil' } }],
     },
   ],
 })
 
-router.beforeEach((to) => {
+router.beforeEach(async (to) => {
   const auth = useAuthStore()
+
+  // Si tenemos token pero no user, intentar restaurarlo desde el backend
+  if (auth.isAuthenticated && !auth.user) {
+    try {
+      await auth.fetchMe()
+    } catch (e) {
+      // si falla, dejamos que las comprobaciones siguientes redirijan
+    }
+  }
 
   // Rutas protegidas
   if (to.meta.requiresAuth && !auth.isAuthenticated) {
     return { path: '/login', query: { redirect: to.fullPath } }
+  }
+
+  // Verificar roles si la ruta declara meta.roles
+  const routeRoles = (to.meta && (to.meta as any).roles) as string[] | undefined
+  if (routeRoles && auth.user) {
+    const userRoles = (auth.user.roles || []).map((r: string) => r.toLowerCase().replace(/^role_/, ''))
+    const allowed = routeRoles.map(r => r.toLowerCase())
+    const isAdmin = userRoles.includes('admin') || userRoles.includes('role_admin')
+    const intersects = userRoles.some((ur: string) => allowed.includes(ur))
+    if (!isAdmin && !intersects) {
+      return { path: '/home' }
+    }
   }
 
   // Si ya está loggeado, evitar volver al login

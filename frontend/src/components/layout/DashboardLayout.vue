@@ -6,7 +6,6 @@
       HeaderBar
     main.content
       router-view
-      //- esto es una prueba
 </template>
 
 <script lang="ts" setup></script>
