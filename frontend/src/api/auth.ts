@@ -24,5 +24,14 @@ export async function fetchMe(token?: string | null): Promise<any | null> {
   }
 
   const data = await res.json();
+  // Normalizar roles: si el backend devuelve objetos Role, extraer el `slug` o `name`.
+  if (Array.isArray(data.roles)) {
+    data.roles = data.roles
+      .map((r: any) => typeof r === 'string' ? r : (r?.slug ?? r?.name ?? null))
+      .filter(Boolean);
+  } else {
+    data.roles = []
+  }
+
   return data;
 }

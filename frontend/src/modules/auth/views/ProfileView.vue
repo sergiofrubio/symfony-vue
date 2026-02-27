@@ -97,7 +97,11 @@ async function fetchProfile() {
     form.name = data.name ?? ''
     form.email = data.email ?? ''
     form.avatar = data.avatar ?? null
-    form.roles = Array.isArray(data.roles) ? data.roles : []
+    if (Array.isArray(data.roles)) {
+      form.roles = data.roles.map((r: any) => typeof r === 'string' ? r : (r?.slug ?? r?.name ?? '')).filter((v: string) => !!v)
+    } else {
+      form.roles = []
+    }
     form.is_active = Boolean(data.is_active)
     form.last_login = data.last_login ?? null
   } catch (e) {
