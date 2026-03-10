@@ -1,57 +1,61 @@
 <template lang="pug">
-div.user-view
-  .toolbar(style="display:flex;gap:12px;align-items:center;margin-bottom:12px;")
-    el-input(
-      v-model="search"
-      placeholder="Buscar por email o texto..."
-      clearable
-      @clear="onClear"
-      @input="onSearchInput"
-      style="width:320px"
-    )
-      template(#prefix)
-        el-icon
-          i.el-icon-search
-    el-select(v-model="selectedRole" placeholder="Filtrar por rol" clearable style="width:180px")
-      el-option(key="all" label="Todos" :value="''")
-      el-option(v-for="r in rolesOptions" :key="r" :label="r" :value="r")
-    el-select(v-model="selectedActive" placeholder="Estado" clearable style="width:140px")
-      el-option(label="Todos" :value="''")
-      el-option(label="Activos" :value="true")
-      el-option(label="Inactivos" :value="false")
-    el-button(type="primary" @click="fetchUsers") Actualizar
+.user-view
+  .users-header
+    .header-copy
+      h2 Gestión de usuarios
+      p Administra cuentas, accesos y estado de actividad desde un solo lugar.
+    .header-actions
+      el-button(type="primary" plain @click="goToCreate") Añadir usuario
+      el-button(type="primary" @click="fetchUsers" :loading="loading") Actualizar
 
-  el-table(:data="users" v-loading="loading" style="width:100%")
-    el-table-column(prop="id" label="ID" width="70")
-    el-table-column(prop="email" label="Email")
-    el-table-column(label="Roles")
-      template(#default="{row}")
-        span(v-for="(role, idx) in row.roles" :key="idx")
-          el-tag(size="small" style="margin-right:6px") {{ role }}
-    el-table-column(prop="is_active" label="Activo" width="100")
-      template(#default="{row}")
-        el-switch(:model-value="row.is_active" disabled)
-    el-table-column(prop="last_login" label="Último login" width="180")
-      template(#default="{row}")
-        span {{ formatDate(row.last_login) }}
-    el-table-column(label="Acciones" width="160")
-      template(#default="{row}")
-        el-button(type="primary" size="small" @click="onEdit(row)") Editar
-        el-button(type="danger" size="small" @click="onDelete(row)" style="margin-left:6px") Eliminar
+  el-card.users-card(shadow="never")
+    .toolbar
+      el-input.toolbar-input(
+        v-model="search"
+        placeholder="Buscar por email o texto..."
+        clearable
+        @clear="onClear"
+        @input="onSearchInput"
+      )
+      el-select(v-model="selectedRole" placeholder="Filtrar por rol" clearable)
+        el-option(key="all" label="Todos" :value="''")
+        el-option(v-for="r in rolesOptions" :key="r" :label="r" :value="r")
+      el-select(v-model="selectedActive" placeholder="Estado" clearable)
+        el-option(label="Todos" :value="''")
+        el-option(label="Activos" :value="true")
+        el-option(label="Inactivos" :value="false")
 
-  .footer(style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;")
-    div
-      span(style="color:var(--el-text-color-secondary)") Mostrando {{ meta.from }} - {{ meta.to }} de {{ meta.total }} usuarios
-    el-pagination(
-      background
-      :page-size="pageSize"
-      :current-page="page"
-      :total="meta.total"
-      @current-change="onPageChange"
-      @size-change="onPageSizeChange"
-      layout="sizes, prev, pager, next, jumper"
-      :page-sizes="[10,20,50]"
-    )
+    el-table.users-table(:data="users" v-loading="loading")
+      el-table-column(prop="id" label="ID" width="80")
+      el-table-column(prop="email" label="Email" min-width="220")
+      el-table-column(label="Roles" min-width="200")
+        template(#default="{ row }")
+          .role-tags
+            el-tag(v-for="(role, idx) in row.roles" :key="idx" size="small" effect="plain") {{ role }}
+      el-table-column(prop="is_active" label="Activo" width="100")
+        template(#default="{ row }")
+          el-switch(:model-value="row.is_active" disabled)
+      el-table-column(prop="last_login" label="Último login" min-width="190")
+        template(#default="{ row }")
+          span.last-login {{ formatDate(row.last_login) }}
+      el-table-column(label="Acciones" width="180" fixed="right")
+        template(#default="{ row }")
+          .actions
+            el-button(type="primary" link @click="onEdit(row)") Editar
+            el-button(type="danger" link @click="onDelete(row)") Eliminar
+
+    .footer
+      span.results Mostrando {{ meta.from }} - {{ meta.to }} de {{ meta.total }} usuarios
+      el-pagination(
+        background
+        :page-size="pageSize"
+        :current-page="page"
+        :total="meta.total"
+        @current-change="onPageChange"
+        @size-change="onPageSizeChange"
+        layout="sizes, prev, pager, next"
+        :page-sizes="[10, 20, 50]"
+      )
 </template>
 
 <script setup lang="ts">
@@ -59,6 +63,10 @@ import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { getAuthHeaders } from '@/api/auth'
 import { useAuthStore } from '@/modules/auth/store/useAuthStore'
+
+defineOptions({
+  name: 'UsersView',
+})
 
 type User = {
   id: number
@@ -82,19 +90,6 @@ const meta = reactive({ total: 0, from: 0, to: 0 })
 const rolesOptions = ref<string[]>(['ROLE_USER', 'ROLE_ADMIN'])
 
 let searchTimer: number | undefined
-
-// function getAuthHeaders(): Record<string, string> {
-//   const token = localStorage.getItem('jwt_token')
-//   if (!token) {
-//     // si no hay token, redirige a login
-//     router.push('/login')
-//     return {}
-//   }
-//   return {
-//     Authorization: `Bearer ${token}`,
-//     Accept: 'application/json',
-//   }
-// }
 
 function buildQueryParams() {
   const params: Record<string, string> = {}
@@ -123,7 +118,7 @@ async function fetchUsers() {
     meta.total = data.total ?? users.value.length
     meta.from = users.value.length ? (page.value - 1) * pageSize.value + 1 : 0
     meta.to = users.value.length ? meta.from + users.value.length - 1 : 0
-  } catch (e) {
+  } catch {
     users.value = []
     meta.total = 0
     meta.from = 0
@@ -158,7 +153,11 @@ function onPageSizeChange(size: number) {
 }
 
 function onEdit(row: User) {
-  console.log('Editar', row)
+  router.push(`/users/${row.id}/edit`)
+}
+
+function goToCreate() {
+  router.push('/users/new')
 }
 
 async function onDelete(row: User) {
@@ -180,7 +179,7 @@ async function onDelete(row: User) {
     }
     if (!res.ok) throw new Error('No se pudo eliminar')
     fetchUsers()
-  } catch (e) {
+  } catch {
     alert('Error al eliminar usuario')
   } finally {
     loading.value = false
@@ -204,8 +203,97 @@ onMounted(() => {
 
 <style scoped>
 .user-view {
-  padding: 12px;
-  background: var(--el-bg-color);
-  border-radius: 6px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 8px 12px;
+}
+
+.users-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 14px;
+  gap: 12px;
+}
+
+.header-copy h2 {
+  margin: 0;
+  font-size: 22px;
+  color: #0f172a;
+}
+
+.header-copy p {
+  margin: 4px 0 0;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.users-card {
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 12px;
+}
+
+.toolbar {
+  display: grid;
+  grid-template-columns: minmax(250px, 1.4fr) 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.toolbar-input {
+  width: 100%;
+}
+
+.users-table {
+  width: 100%;
+}
+
+.role-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.last-login {
+  color: #475569;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 14px;
+  gap: 12px;
+}
+
+.results {
+  color: #6b7280;
+  font-size: 13px;
+}
+
+@media (max-width: 900px) {
+  .users-header,
+  .footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .header-actions {
+    justify-content: flex-start;
+  }
+
+  .toolbar {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

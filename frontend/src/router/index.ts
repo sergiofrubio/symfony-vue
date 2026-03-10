@@ -4,6 +4,7 @@ import Login from '@/modules/auth/views/LoginView.vue'
 import DashboardLayout from '@/components/layout/DashboardLayout.vue'
 import Home from '@/modules/home/views/HomeView.vue'
 import Users from '@/modules/users/views/index.vue'
+import UserFormView from '@/modules/users/views/UserFormView.vue'
 import Profile from '@/modules/auth/views/ProfileView.vue'
 
 const router = createRouter({
@@ -16,10 +17,14 @@ const router = createRouter({
       component: DashboardLayout,
       children: [{ path: '', name: 'Home', component: Home, meta: { requiresAuth: true, roles: ['admin','user','manager'], icon: 'House', title: 'Dashboard' } }],
     },
-     {
+    {
       path: '/users',
       component: DashboardLayout,
-      children: [{ path: '', name: 'Users', component: Users, meta: { requiresAuth: true, roles: ['admin'], icon: 'User', title: 'Usuarios' } }],
+      children: [
+        { path: '', name: 'Users', component: Users, meta: { requiresAuth: true, roles: ['admin'], icon: 'User', title: 'Usuarios' } },
+        { path: 'new', name: 'UsersCreate', component: UserFormView, meta: { requiresAuth: true, roles: ['admin'], icon: 'User', title: 'Nuevo usuario' } },
+        { path: ':id/edit', name: 'UsersEdit', component: UserFormView, meta: { requiresAuth: true, roles: ['admin'], icon: 'User', title: 'Editar usuario' } },
+      ],
     },
     {
       path: '/profile',
