@@ -1,6 +1,10 @@
 <template lang="pug">
 div.profile-view
   .profile-container
+    .profile-header
+      .header-copy
+        h2 Mi perfil
+        p Administra cuentas, accesos y estado de actividad desde un solo lugar.
     el-card.profile-card
       .profile-grid
         .left-column
@@ -24,8 +28,8 @@ div.profile-view
             el-form-item(label="Email" prop="email")
               el-input(v-model="form.email" placeholder="Correo electrónico")
 
-            el-form-item(label="Activo")
-              el-switch(v-model="form.is_active")
+            //- el-form-item(label="Activo")
+            //-   el-switch(v-model="form.is_active")
 
             el-divider
             h4 Cambio de contraseña
@@ -180,6 +184,25 @@ onMounted(() => { fetchProfile() })
 </script>
 
 <style scoped>
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 14px;
+  gap: 12px;
+}
+
+.header-copy h2 {
+  margin: 0;
+  font-size: 22px;
+  color: #0f172a;
+}
+
+.header-copy p {
+  margin: 4px 0 0;
+  color: #6b7280;
+  font-size: 13px;
+}
 .profile-view { padding: 12px; margin: 0 auto }
 .profile-card { padding: 18px; border-radius: 12px; background: #fff; box-shadow: 0 8px 24px rgba(15,23,42,0.06) }
 .profile-grid { display: grid; grid-template-columns: 280px 1fr; gap: 20px; align-items: start }

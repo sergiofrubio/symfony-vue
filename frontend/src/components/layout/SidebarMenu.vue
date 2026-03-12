@@ -42,7 +42,7 @@ const icons: Record<string, any> = Icons as any
 const menuItems = computed(() => {
   const all = router.getRoutes()
   const items = all
-    .filter(r => r.meta && (r.meta as any).icon && (r.meta as any).requiresAuth)
+    .filter(r => r.meta && (r.meta as any).show === true && (r.meta as any).icon && (r.meta as any).requiresAuth)
     .map(r => ({ path: r.path, name: r.name, meta: r.meta }))
     // remove duplicates and only root-level menu entries
     .filter((v, i, a) => v.path && a.findIndex(x => x.path === v.path) === i && v.path !== '/' )

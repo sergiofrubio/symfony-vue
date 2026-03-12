@@ -4,7 +4,9 @@
     .header-copy
       h2 Gestión de usuarios
       p Administra cuentas, accesos y estado de actividad desde un solo lugar.
-    el-button(type="primary" @click="fetchUsers" :loading="loading") Actualizar
+    .actions
+      el-button(type="primary" @click="fetchUsers" :loading="loading") Añadir nuevo usuario
+      el-button(type="primary" @click="fetchUsers" :loading="loading") Actualizar
 
   el-card.users-card(shadow="never")
     .toolbar
@@ -254,7 +256,7 @@ onMounted(() => {
 
 .actions {
   display: flex;
-  gap: 10px;
+  /* gap: 10px; */
 }
 
 .footer {

@@ -14,17 +14,17 @@ const router = createRouter({
     {
       path: '/home',
       component: DashboardLayout,
-      children: [{ path: '', name: 'Home', component: Home, meta: { requiresAuth: true, roles: ['admin','user','manager'], icon: 'House', title: 'Dashboard' } }],
+      children: [{ path: '', name: 'Home', component: Home, meta: { requiresAuth: true, roles: ['admin','user','manager'], icon: 'House', title: 'Dashboard', show: true } }],
     },
-     {
+    {
       path: '/users',
       component: DashboardLayout,
-      children: [{ path: '', name: 'Users', component: Users, meta: { requiresAuth: true, roles: ['admin'], icon: 'User', title: 'Usuarios' } }],
+      children: [{ path: '', name: 'Users', component: Users, meta: { requiresAuth: true, roles: ['admin'], icon: 'User', title: 'Usuarios', show: true } }],
     },
     {
       path: '/profile',
       component: DashboardLayout,
-      children: [{ path: '', name: 'Profile', component: Profile, meta: { requiresAuth: true, roles: ['admin','user','manager'], icon: 'User', title: 'Perfil' } }],
+      children: [{ path: '', name: 'Profile', component: Profile, meta: { requiresAuth: true, roles: ['admin','user','manager'], icon: 'User', title: 'Perfil', show: false } }],
     },
   ],
 })
