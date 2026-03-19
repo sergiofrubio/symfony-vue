@@ -5,7 +5,7 @@
       h2 Gestión de usuarios
       p Administra cuentas, accesos y estado de actividad desde un solo lugar.
     .actions
-      el-button(type="primary" @click="fetchUsers" :loading="loading") Añadir nuevo usuario
+      el-button(type="primary" @click="onAdd") Añadir nuevo usuario
       el-button(type="primary" @click="fetchUsers" :loading="loading") Actualizar
 
   el-card.users-card(shadow="never")
@@ -41,8 +41,8 @@
       el-table-column(label="Acciones" width="180" fixed="right")
         template(#default="{ row }")
           .actions
-            el-button(type="primary" link @click="onEdit(row)") Editar
-            el-button(type="danger" link @click="onDelete(row)") Eliminar
+            el-button(type="primary" link @click.prevent="onEdit(row, $event)") Editar
+            el-button(type="danger" link @click.prevent="onDelete(row)") Eliminar
 
     .footer
       span.results Mostrando {{ meta.from }} - {{ meta.to }} de {{ meta.total }} usuarios
@@ -152,8 +152,24 @@ function onPageSizeChange(size: number) {
   fetchUsers()
 }
 
-function onEdit(row: User) {
-  console.log('Editar', row)
+function onEdit(row: User, e: Event) {
+  // prevenir comportamiento por defecto si el botón está renderizando un enlace
+  // if (e && typeof (e.preventDefault) === 'function') e.preventDefault()
+
+  // try {
+  //   sessionStorage.setItem('editingUser', JSON.stringify(row))
+  // } catch (err) {
+  //   // ignore
+  // }
+
+  sessionStorage.setItem('editingUser', JSON.stringify(row))
+  router.push({ name: 'UserEdit', params: { id: String(row.id) } })
+
+  
+}
+
+function onAdd() {
+  router.push('/users/new')
 }
 
 async function onDelete(row: User) {
