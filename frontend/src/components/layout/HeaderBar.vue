@@ -31,10 +31,10 @@ const router = useRouter()
 const notifications = ref<Notification[]>([])
 
 // ejemplo base
-notifications.value = [
-  { id: 1, title: 'Nueva orden recibida', date: new Date().toISOString(), read: false, url: '/orders/123' },
-  { id: 2, title: 'Backup completado', date: new Date(Date.now() - 3600_000).toISOString(), read: true },
-]
+// notifications.value = [
+//   { id: 1, title: 'Nueva orden recibida', date: new Date().toISOString(), read: false, url: '/orders/123' },
+//   { id: 2, title: 'Backup completado', date: new Date(Date.now() - 3600_000).toISOString(), read: true },
+// ]
 
 const unreadCount = computed(() => notifications.value.filter(n => !n.read).length)
 
