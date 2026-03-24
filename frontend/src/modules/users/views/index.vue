@@ -164,8 +164,6 @@ function onEdit(row: User, e: Event) {
 
   sessionStorage.setItem('editingUser', JSON.stringify(row))
   router.push({ name: 'UserEdit', params: { id: String(row.id) } })
-
-  
 }
 
 function onAdd() {

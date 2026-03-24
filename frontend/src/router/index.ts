@@ -6,6 +6,8 @@ import Home from '@/modules/home/views/HomeView.vue'
 import Users from '@/modules/users/views/index.vue'
 import UserForm from '@/modules/users/views/Form.vue'
 import Profile from '@/modules/auth/views/ProfileView.vue'
+import Invoices from '@/modules/invoices/views/index.vue'
+import InvoiceForm from '@/modules/invoices/views/Form.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -24,6 +26,15 @@ const router = createRouter({
         { path: '', name: 'Users', component: Users, meta: { requiresAuth: true, roles: ['admin'], icon: 'User', title: 'Usuarios', show: true } },
         { path: 'new', name: 'UserNew', component: UserForm, meta: { requiresAuth: true, roles: ['admin'], icon: 'User', title: 'Nuevo usuario', show: false } },
         { path: ':id/edit', name: 'UserEdit', component: UserForm, meta: { requiresAuth: true, roles: ['admin'], icon: 'User', title: 'Editar usuario', show: false } },
+      ],
+    },
+    {
+      path: '/invoices',
+      component: DashboardLayout,
+      children: [
+        { path: '', name: 'Invoices', component: Invoices, meta: { requiresAuth: true, roles: ['admin','user'], icon: 'Document', title: 'Facturas', show: true } },
+        { path: 'new', name: 'InvoiceNew', component: InvoiceForm, meta: { requiresAuth: true, roles: ['admin','user'], icon: '', title: 'Nueva factura', show: false } },
+        { path: ':id/edit', name: 'InvoiceEdit', component: InvoiceForm, meta: { requiresAuth: true, roles: ['admin','user'], icon: '', title: 'Editar factura', show: false } },
       ],
     },
     {

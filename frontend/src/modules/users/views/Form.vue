@@ -175,33 +175,45 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.user-form-view {
-  max-width: 840px;
-  margin: 0 auto;
-  padding: 12px;
-}
+ .user-form-view {
+    max-width: 840px;
+    margin: 0 auto;
+    padding: 12px;
+  }
 
-.header {
-  display: block;
-  /* justify-content: space-between;
+  .header {
+    display: block;
+    /* justify-content: space-between;
   align-items: flex-start; */
-  margin-bottom: 14px;
-  gap: 12px;
-}
+    margin-bottom: 14px;
+    gap: 12px;
+  }
 
-.header h2 {
-  margin: 0 0 6px;
-}
+  .header h2 {
+    margin: 0 0 6px;
+  }
 
-.header p {
-  margin: 4px 0 0;
-  color: #6b7280;
-  font-size: 13px;
-}
+  .header p {
+    margin: 4px 0 0;
+    color: #6b7280;
+    font-size: 13px;
+  }
 
-.small { color: #6b7280; font-size: 13px; margin-bottom: 12px; }
+  .small {
+    color: #6b7280;
+    font-size: 13px;
+    margin-bottom: 12px;
+  }
 
-.users-card { border-radius: 12px; border: 1px solid rgba(15,23,42,0.06); padding: 16px; }
+  .users-card {
+    border-radius: 12px;
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    padding: 16px;
+  }
 
-.form-actions { display: flex; gap: 8px; margin-top: 18px; }
+  .form-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 18px;
+  }
 </style>

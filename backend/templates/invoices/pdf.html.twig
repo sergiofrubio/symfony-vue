@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Factura {{ invoice.number }}</title>
+    <style>
+      body { font-family: Arial, sans-serif; color: #111 }
+      .header { display:flex; justify-content:space-between; align-items:center }
+      .lines { width:100%; border-collapse: collapse; margin-top: 12px }
+      .lines th, .lines td { border: 1px solid #ddd; padding: 8px }
+      .right { text-align: right }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div>
+        <h2>Factura {{ invoice.number }}</h2>
+        <div>Fecha: {{ invoice.date ? invoice.date|date('Y-m-d') : '' }}</div>
+      </div>
+      <div>
+        <strong>Cliente</strong>
+        <div>{{ invoice.customer.name }}</div>
+        <div>{{ invoice.customer.email }}</div>
+      </div>
+    </div>
+
+    <table class="lines">
+      <thead>
+        <tr>
+          <th>Descripción</th>
+          <th>Cantidad</th>
+          <th>Precio unit.</th>
+          <th>Subtotal</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for l in invoice.invoiceLines %}
+          <tr>
+            <td>{{ l.product ? l.product.name : '-' }}</td>
+            <td class="right">{{ l.quantity }}</td>
+            <td class="right">{{ l.unitPrice }}</td>
+            <td class="right">{{ l.subtotal }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="3" class="right"><strong>Total</strong></td>
+          <td class="right"><strong>{{ invoice.totalAmount }}</strong></td>
+        </tr>
+      </tfoot>
+    </table>
+  </body>
+</html>
