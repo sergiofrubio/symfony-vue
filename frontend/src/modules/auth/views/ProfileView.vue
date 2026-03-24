@@ -93,7 +93,7 @@ function getAuthHeaders() {
 async function fetchProfile() {
   loading.value = true
   try {
-    const res = await fetch('/api/me', { headers: getAuthHeaders() })
+    const res = await fetch('/api/users/me', { headers: getAuthHeaders() })
     if (res.status === 401) { router.push('/login'); return }
     if (!res.ok) throw new Error('Error fetching profile')
     const data = await res.json()
