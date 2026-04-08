@@ -68,7 +68,7 @@ export default defineConfig({
       interval: 100     // opcional, frecuencia en ms
     },
      proxy: {
-      '/api': 'http://symfony_nginx_dev', // todas las peticiones que empiecen con /api van al backend
+      '/api': 'http://nginx', // todas las peticiones que empiecen con /api van al backend
     }
   }
 })
