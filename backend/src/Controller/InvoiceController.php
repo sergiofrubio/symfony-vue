@@ -264,14 +264,14 @@ class InvoiceController extends AbstractController
 
         $html = $this->renderView('invoices/pdf.html.twig', ['invoice' => $inv]);
 
-        if (class_exists('\Dompdf\Dompdf')) {
-            $dompdf = new \Dompdf\Dompdf();
-            $dompdf->loadHtml($html);
-            $dompdf->setPaper('A4', 'portrait');
-            $dompdf->render();
-            $pdf = $dompdf->output();
-            return new Response($pdf, 200, ['Content-Type' => 'application/pdf', 'Content-Disposition' => 'inline; filename="invoice_'.$inv->getNumber().'.pdf"']);
-        }
+//         if (class_exists('\Dompdf\Dompdf')) {
+//             $dompdf = new \Dompdf\Dompdf();
+//             $dompdf->loadHtml($html);
+//             $dompdf->setPaper('A4', 'portrait');
+//             $dompdf->render();
+//             $pdf = $dompdf->output();
+//             return new Response($pdf, 200, ['Content-Type' => 'application/pdf', 'Content-Disposition' => 'inline; filename="invoice_'.$inv->getNumber().'.pdf"']);
+//         }
 
         // Sin dompdf, devolver HTML y una cabecera informativa
         return new Response($html, 200, ['Content-Type' => 'text/html', 'X-PDF-Available' => 'false']);
