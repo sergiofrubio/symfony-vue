@@ -9,8 +9,10 @@ services:
       APP_ENV: prod
       APP_DEBUG: 0
       DATABASE_URL: mysql://symfony:symfony@db:3306/symfony
+      REDIS_URL: redis://redis:6379
     depends_on:
       - db
+      - redis
 
   # --- Nginx para Symfony API ---
   nginx:
@@ -44,5 +46,14 @@ services:
     volumes:
       - db_data:/var/lib/mysql
 
+  # --- Redis ---
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
 volumes:
   db_data:
+  redis_data:

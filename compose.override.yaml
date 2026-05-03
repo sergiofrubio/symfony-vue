@@ -11,6 +11,7 @@ services:
     environment:
       APP_ENV: dev
       APP_DEBUG: 1
+      REDIS_URL: redis://redis:6379
     ports:
       - "9000:9000"
 
