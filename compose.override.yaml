@@ -3,11 +3,11 @@ services:
   # --- Backend desarrollo ---
   backend:
     build:
-      context: ./backend
+      context: .
       dockerfile: Dockerfile
       target: dev
     volumes:
-      - ./backend:/var/www/html
+      - .:/var/www/html
       - /var/www/html/vendor
     environment:
       APP_ENV: dev
@@ -19,7 +19,7 @@ services:
   # --- Nginx desarrollo ---
   nginx:
     volumes:
-      - ./backend:/var/www/html
+      - .:/var/www/html
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
     ports:
       - "8000:80"
@@ -29,11 +29,11 @@ services:
   # --- Frontend desarrollo ---
   frontend:
     build:
-      context: ./frontend
+      context: ./vue
       dockerfile: Dockerfile
       target: dev
     volumes:
-      - ./frontend:/app
+      - ./vue:/app
       - /app/node_modules
     ports:
       - "5173:5173"

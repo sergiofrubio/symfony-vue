@@ -19,7 +19,17 @@ FROM base AS dev
 COPY . .
 RUN composer install
 
-CMD ["php-fpm"]
+CMD ["sh", "-c", "\
+    until php bin/console doctrine:query:sql 'SELECT 1' > /dev/null 2>&1; do \
+    echo 'Esperando a la base de datos...'; \
+    sleep 2; \
+    done; \
+    php bin/console doctrine:database:create --if-not-exists --no-interaction && \
+    php bin/console doctrine:migrations:migrate --no-interaction && \
+    php bin/console doctrine:fixtures:load --no-interaction --append && \
+    php bin/console lexik:jwt:generate-keypair --skip-if-exists && \
+    php-fpm \
+    "]
 
 # --- 3. Etapa de Producción (Prod) ---
 FROM base AS prod
@@ -34,4 +44,13 @@ RUN composer install --no-dev --optimize-autoloader --classmap-authoritative
 RUN php bin/console cache:clear --env=prod \
     && chown -R www-data:www-data /var/www/html/var
 
-CMD ["php-fpm"]
+CMD ["sh", "-c", "\
+    until php bin/console doctrine:query:sql 'SELECT 1' > /dev/null 2>&1; do \
+    echo 'Esperando a la base de datos...'; \
+    sleep 2; \
+    done; \
+    php bin/console doctrine:database:create --if-not-exists --no-interaction && \
+    php bin/console doctrine:migrations:migrate --no-interaction && \
+    php bin/console lexik:jwt:generate-keypair --skip-if-exists && \
+    php-fpm \
+    "]

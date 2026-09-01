@@ -1,9 +1,8 @@
-
 services:
   # --- Backend PHP-FPM ---
   backend:
     build:
-      context: ./backend
+      context: .
       dockerfile: Dockerfile
       target: prod
     environment:
@@ -13,9 +12,9 @@ services:
       REDIS_URL: redis://redis:6379
     depends_on:
       - db
-      - redis
+      # - redis
 
-  # --- Nginx para Symfony API ---
+      # --- Nginx para Symfony API ---
   nginx:
     image: nginx:alpine
     volumes:
@@ -28,7 +27,7 @@ services:
   # --- Frontend Vue (build estático) ---
   frontend:
     build:
-      context: ./frontend
+      context: ./vue
       dockerfile: Dockerfile
       target: prod
     container_name: vue_frontend
@@ -47,15 +46,13 @@ services:
       - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql
-
   # --- Redis ---
-  redis:
-    image: redis:alpine
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
+  # redis:
+  #   image: redis:alpine
+  #   ports:
+  #     - "6379:6379"
+  #   volumes:
+  #     - redis_data:/data
 
 volumes:
-  db_data:
-  redis_data:
+  db_data: # redis_data:
