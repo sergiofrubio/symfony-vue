@@ -10,6 +10,11 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
 // https://vite.dev/config/
 export default defineConfig({
+  build: {
+    outDir: '../public/build',
+    emptyOutDir: true,
+  },
+  base: '/build/',
   plugins: [
     vue(),
     vueDevTools(),
