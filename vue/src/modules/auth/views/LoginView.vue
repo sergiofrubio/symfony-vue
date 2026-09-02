@@ -1,35 +1,62 @@
 <template lang="pug">
-  el-container.login-container
-    .bg-decor
-    el-card.login-card.shadow()
+.login-page
+  .login-card-container
+    el-card.login-card(shadow="always")
       .login-header
-        img.logo(src="@/assets/logo.svg" alt="Logo")
-        h2.title Bienvenido de vuelta
-        p.subtitle Ingresa a tu cuenta para continuar
+        img.login-logo(src="@/assets/logo.svg" alt="Logo Corporativo")
+        h1.login-title Acceso Corporativo
+        p.login-subtitle Introduce tus credenciales para acceder al sistema
 
-      el-form(:model="form" :rules="rules" ref="formRef" class="login-form")
-        el-alert(v-if="showError" title="Credenciales inválidas" type="error" class="login-alert")
+      el-alert.login-alert(
+        v-if="showError"
+        title="Credenciales incorrectas o usuario no autorizado"
+        type="error"
+        show-icon
+        :closable="false"
+      )
 
-        el-form-item(prop="email")
-          el-input(v-model="form.email" placeholder="Correo electrónico" clearable)
+      el-form(
+        :model="form"
+        :rules="rules"
+        ref="formRef"
+        class="login-form"
+        label-position="top"
+        @keyup.enter="onSubmit"
+      )
+        el-form-item(label="Correo electrónico" prop="email")
+          el-input(
+            v-model="form.email"
+            placeholder="usuario@empresa.com"
+            :prefix-icon="Message"
+            size="large"
+            clearable
+          )
 
-        el-form-item(prop="password")
-          el-input(v-model="form.password" :type="showPassword ? 'text' : 'password'" placeholder="Contraseña" show-password)
+        el-form-item(label="Contraseña" prop="password")
+          el-input(
+            v-model="form.password"
+            type="password"
+            placeholder="••••••••"
+            :prefix-icon="Lock"
+            size="large"
+            show-password
+          )
 
-        el-form-item
-          .form-row
-            el-checkbox(v-model="remember") Recuérdame
-            //- a.forgot(@click.prevent="onForgot") ¿Olvidaste tu contraseña?
+        .form-options
+          el-checkbox(v-model="remember") Recordar mi sesión
 
-        el-form-item
-          el-button(type="primary" @click="onSubmit" class="login-button" block :loading="loading" :disabled="loading") Iniciar sesión
+        el-form-item.submit-item
+          el-button(
+            type="primary"
+            size="large"
+            class="submit-button"
+            :loading="loading"
+            :disabled="loading"
+            @click="onSubmit"
+          ) Iniciar Sesión
 
-        //- .social-section
-        //-   p.social-text O inicia con
-        //-   .social-buttons
-        //-     el-button(plain icon="google") Google
-        //-     el-button(plain icon="facebook") Facebook
-
+      .login-footer
+        p.footer-text © 2026 Enterprise Portal · Acceso seguro y cifrado
 </template>
 
 <script lang="ts" setup>
@@ -37,13 +64,14 @@ import { reactive, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/modules/auth/store/useAuthStore'
+import { Message, Lock } from '@element-plus/icons-vue'
 
 const router = useRouter()
 const auth = useAuthStore()
 const formRef = ref<any>(null)
 const showError = ref(false)
-const showPassword = ref(false)
 const remember = ref(false)
+const loading = ref(false)
 
 const form = reactive({
   email: '',
@@ -51,22 +79,28 @@ const form = reactive({
 })
 
 const rules = {
-  email: [{ required: true, message: 'El correo es requerido', trigger: 'blur' }, { type: 'email', message: 'Correo inválido', trigger: 'blur' }],
-  password: [{ required: true, message: 'La contraseña es requerida', trigger: 'blur' }, { min: 4, message: 'La contraseña debe tener al menos 4 caracteres', trigger: 'blur' }],
+  email: [
+    { required: true, message: 'El correo electrónico es requerido', trigger: 'blur' },
+    { type: 'email', message: 'Ingresa un correo electrónico válido', trigger: 'blur' },
+  ],
+  password: [
+    { required: true, message: 'La contraseña es requerida', trigger: 'blur' },
+    { min: 4, message: 'La contraseña debe tener al menos 4 caracteres', trigger: 'blur' },
+  ],
 }
 
-const loading = ref(false)
-
 const onSubmit = async () => {
+  if (!formRef.value) return
+
   try {
     await formRef.value.validate()
   } catch {
-    showError.value = true
     return
   }
 
   loading.value = true
   showError.value = false
+
   try {
     const response = await fetch('/api/login_check', {
       method: 'POST',
@@ -81,125 +115,123 @@ const onSubmit = async () => {
 
     const data = await response.json()
     if (data.token) {
+      auth.setToken(data.token)
       try {
-        auth.setToken(data.token)
         await auth.fetchMe()
-        ElMessage.success('¡Inicio de sesión exitoso!')
+        ElMessage.success('Sesión iniciada correctamente')
         showError.value = false
         router.push('/home')
-      } catch (err) {
+      } catch {
         auth.logout()
         showError.value = true
-        ElMessage.error('No se pudo obtener datos del usuario')
+        ElMessage.error('No se pudo cargar la información del usuario')
       }
     } else {
       showError.value = true
     }
-  } catch (e) {
-    // showError ya establecido
+  } catch {
+    showError.value = true
   } finally {
     loading.value = false
   }
 }
-
-const onForgot = () => {
-  router.push('/auth/forgot')
-}
 </script>
 
 <style scoped>
-.login-container {
+.login-page {
   min-height: 100vh;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(180deg, #f5f7fb 0%, #ffffff 100%);
-  position: relative;
-  padding: 40px 16px;
-  color: #0f172a;
+  background-color: #f1f5f9;
+  background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+  background-size: 24px 24px;
+  padding: 24px;
+  box-sizing: border-box;
 }
 
-.bg-decor {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background-image:
-    radial-gradient(circle at 10% 20%, rgba(99,102,241,0.06), transparent 8%),
-    radial-gradient(circle at 80% 80%, rgba(6,182,212,0.04), transparent 12%);
-  opacity: 1;
+.login-card-container {
+  width: 100%;
+  max-width: 440px;
 }
 
 .login-card {
-  width: 420px;
-  max-width: 95%;
-  padding: 28px;
   border-radius: 12px;
-  box-shadow: 0 8px 30px rgba(16,24,40,0.08);
-  background: rgba(255,255,255,0.98);
-  border: 1px solid rgba(15,23,42,0.06);
-  color: #0f172a;
+  border: 1px solid #e2e8f0;
+  padding: 12px 10px;
 }
 
 .login-header {
   text-align: center;
-  margin-bottom: 18px;
+  margin-bottom: 24px;
 }
-.logo {
-  height: 62px;
+
+.login-logo {
+  height: 48px;
+  width: 48px;
   margin-bottom: 12px;
-  filter: none;
 }
-.title {
+
+.login-title {
+  margin: 0 0 6px 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.login-subtitle {
   margin: 0;
-  font-size: 20px;
-  font-weight: 600;
-  color: #0b1220;
-}
-.subtitle {
-  margin: 6px 0 0;
   font-size: 13px;
-  color: #6b7280;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.login-alert {
+  margin-bottom: 20px;
 }
 
 .login-form {
-  margin-top: 6px;
-}
-.login-alert {
-  margin-bottom: 12px;
-}
-
-.form-row {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
 }
-.forgot {
-  color: #2563eb;
+
+:deep(.el-form-item__label) {
+  font-weight: 500;
+  color: #334155;
+  padding-bottom: 4px;
   font-size: 13px;
-  cursor: pointer;
 }
-.forgot:hover { text-decoration: underline }
 
-.login-button {
-  background: linear-gradient(90deg,#2563eb,#06b6d4);
-  border: none;
-  color: #ffffff;
+.form-options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.submit-item {
+  margin-bottom: 8px;
+}
+
+.submit-button {
+  width: 100%;
   font-weight: 600;
-  box-shadow: 0 6px 18px rgba(37,99,235,0.18);
-}
-
-.social-section { margin-top: 12px; text-align: center }
-.social-text { color: #6b7280; margin-bottom: 8px }
-.social-buttons el-button { margin: 0 6px }
-
-.el-input__inner {
-  background: #ffffff;
-  color: #0f172a;
+  font-size: 14px;
+  height: 44px;
   border-radius: 8px;
 }
 
-@media (max-width: 420px) {
-  .login-card { padding: 18px }
-  .title { font-size: 18px }
+.login-footer {
+  margin-top: 20px;
+  text-align: center;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 16px;
+}
+
+.footer-text {
+  margin: 0;
+  font-size: 12px;
+  color: #94a3b8;
 }
 </style>

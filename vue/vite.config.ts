@@ -10,11 +10,11 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
 // https://vite.dev/config/
 export default defineConfig({
-  build: {
-    outDir: '../public/build',
-    emptyOutDir: true,
-  },
-  base: '/build/',
+  // build: {
+  //   outDir: '../public/build',
+  //   emptyOutDir: true,
+  // },
+  // base: '/build/',
   plugins: [
     vue(),
     vueDevTools(),
@@ -72,7 +72,7 @@ export default defineConfig({
       usePolling: true, // fuerza a usar polling
       interval: 100     // opcional, frecuencia en ms
     },
-     proxy: {
+    proxy: {
       '/api': 'http://nginx', // todas las peticiones que empiecen con /api van al backend
     }
   }
