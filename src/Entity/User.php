@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -11,6 +12,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
+#[ApiResource]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -28,13 +30,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $roles;
 
     /**
+     * @var Collection<int, Company>
+     */
+    #[ORM\ManyToMany(targetEntity: Company::class, inversedBy: 'users')]
+    private Collection $companies;
+
+    #[ORM\ManyToOne(targetEntity: Company::class)]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Company $defaultCompany = null;
+
+    /**
      * @var string The hashed password
      */
     #[ORM\Column]
     private ?string $password = null;
 
     #[ORM\Column(nullable: true)]
-    private ?bool $is_active = null;
+    private ?bool $is_active = true;
 
     #[ORM\Column(nullable: true)]
     private ?\DateTime $last_login = null;
@@ -42,6 +54,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function __construct()
     {
         $this->roles = new ArrayCollection();
+        $this->companies = new ArrayCollection();
+        $this->is_active = true;
     }
 
     public function getId(): ?int
@@ -61,19 +75,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * A visual identifier that represents this user.
-     *
-     * @see UserInterface
-     */
     public function getUserIdentifier(): string
     {
         return (string) $this->email;
     }
 
-    /**
-     * @see PasswordAuthenticatedUserInterface
-     */
     public function getPassword(): ?string
     {
         return $this->password;
@@ -86,13 +92,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * Ensure the session doesn't contain actual password hashes by CRC32C-hashing them, as supported since Symfony 7.3.
-     */
     public function __serialize(): array
     {
         $data = (array) $this;
-        $data["\0".self::class."\0password"] = hash('crc32c', $this->password);
+        $data["\0".self::class."\0password"] = hash('crc32c', $this->password ?? '');
 
         return $data;
     }
@@ -100,7 +103,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[\Deprecated]
     public function eraseCredentials(): void
     {
-        // @deprecated, to be removed when upgrading to Symfony 8
     }
 
     public function isActive(): ?bool
@@ -127,18 +129,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * Devuelve los roles como array de strings para la API de seguridad.
-     * @return string[]
-     */
     public function getRoles(): array
     {
         $roles = $this->roles->map(function (Role $r) {
             return $r->getSlug() ?? $r->getName();
         })->toArray();
 
-        // asegurar array simple de strings
-        return array_values(array_filter($roles));
+        if (empty($roles)) {
+            $roles[] = 'ROLE_USER';
+        }
+
+        return array_values(array_unique(array_filter($roles)));
+    }
+
+    public function getRoleEntities(): Collection
+    {
+        return $this->roles;
     }
 
     public function addRole(Role $role): static
@@ -155,5 +161,58 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->roles->removeElement($role);
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, Company>
+     */
+    public function getCompanies(): Collection
+    {
+        return $this->companies;
+    }
+
+    public function addCompany(Company $company): static
+    {
+        if (!$this->companies->contains($company)) {
+            $this->companies->add($company);
+        }
+
+        return $this;
+    }
+
+    public function removeCompany(Company $company): static
+    {
+        $this->companies->removeElement($company);
+
+        return $this;
+    }
+
+    public function getDefaultCompany(): ?Company
+    {
+        return $this->defaultCompany;
+    }
+
+    public function setDefaultCompany(?Company $defaultCompany): static
+    {
+        $this->defaultCompany = $defaultCompany;
+
+        return $this;
+    }
+
+    /**
+     * Obtiene todos los códigos de permiso asignados a través de sus roles
+     * @return string[]
+     */
+    public function getPermissions(): array
+    {
+        $permissions = [];
+        foreach ($this->roles as $role) {
+            foreach ($role->getPermissions() as $permission) {
+                if ($code = $permission->getCode()) {
+                    $permissions[] = $code;
+                }
+            }
+        }
+        return array_values(array_unique($permissions));
     }
 }

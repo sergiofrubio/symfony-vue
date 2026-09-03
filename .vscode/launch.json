@@ -1,0 +1,49 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Listen for Xdebug (Symfony)",
+      "type": "php",
+      "request": "launch",
+      "port": 9003,
+      "pathMappings": {
+        "/var/www/html": "${workspaceFolder}"
+      },
+      "ignore": [
+        "**/vendor/**/*.php"
+      ]
+    },
+    {
+      "name": "Debug Vue (Chrome)",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:5173",
+      "webRoot": "${workspaceFolder}/vue",
+      "sourceMapPathOverrides": {
+        "webpack:///src/*": "${workspaceFolder}/vue/src/*",
+        "/src/*": "${workspaceFolder}/vue/src/*"
+      }
+    },
+    {
+      "name": "Debug Vue (Edge)",
+      "type": "msedge",
+      "request": "launch",
+      "url": "http://localhost:5173",
+      "webRoot": "${workspaceFolder}/vue",
+      "sourceMapPathOverrides": {
+        "webpack:///src/*": "${workspaceFolder}/vue/src/*",
+        "/src/*": "${workspaceFolder}/vue/src/*"
+      }
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Full Stack: Symfony + Vue (Chrome)",
+      "configurations": [
+        "Listen for Xdebug (Symfony)",
+        "Debug Vue (Chrome)"
+      ],
+      "stopAll": true
+    }
+  ]
+}

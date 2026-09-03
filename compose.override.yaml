@@ -13,6 +13,8 @@ services:
       APP_ENV: dev
       APP_DEBUG: 1
       REDIS_URL: redis://redis:6379
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
       - "9000:9000"
 

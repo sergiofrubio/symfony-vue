@@ -28,6 +28,7 @@
           span {{ crumb.title }}
 
   .header-right
+    CompanySwitcher
     // Campana de Notificaciones
     el-dropdown(trigger="click" @command="onNotifCommand")
       .header-icon-btn(:title="unreadCount ? `${unreadCount} notificaciones sin leer` : 'Notificaciones'")
@@ -85,6 +86,7 @@ import { computed, ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { useAuthStore } from '@/modules/auth/store/useAuthStore'
+import CompanySwitcher from '@/components/common/CompanySwitcher.vue'
 import userAvatarImg from '@/assets/user.png'
 import {
   Expand,

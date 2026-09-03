@@ -2,13 +2,22 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use App\Entity\Contract\TenantAwareInterface;
+use App\Entity\Traits\TenantTrait;
+use App\Entity\Traits\TimestampableTrait;
 use App\Repository\ProductRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
-class Product
+#[ORM\HasLifecycleCallbacks]
+#[ApiResource]
+class Product implements TenantAwareInterface
 {
+    use TimestampableTrait;
+    use TenantTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -20,17 +29,32 @@ class Product
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
-    #[ORM\Column(length: 50, unique: true)]
+    #[ORM\Column(length: 50)]
     private ?string $sku = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
-    private ?string $price = null;
+    private ?string $price = '0.00';
+
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, options: ['default' => '0.00'])]
+    private ?string $costPrice = '0.00';
+
+    #[ORM\Column(type: Types::DECIMAL, precision: 5, scale: 2, options: ['default' => '21.00'])]
+    private ?string $taxRate = '21.00'; // IVA en porcentaje
 
     #[ORM\Column(type: Types::INTEGER)]
     private ?int $stockQuantity = 0;
 
     #[ORM\ManyToOne(inversedBy: 'products')]
     private ?Category $category = null;
+
+    public function __construct()
+    {
+        $this->createdAt = new \DateTime();
+        $this->price = '0.00';
+        $this->costPrice = '0.00';
+        $this->taxRate = '21.00';
+        $this->stockQuantity = 0;
+    }
 
     public function getId(): ?int
     {
@@ -81,6 +105,30 @@ class Product
     public function setPrice(string $price): static
     {
         $this->price = $price;
+
+        return $this;
+    }
+
+    public function getCostPrice(): ?string
+    {
+        return $this->costPrice;
+    }
+
+    public function setCostPrice(?string $costPrice): static
+    {
+        $this->costPrice = $costPrice;
+
+        return $this;
+    }
+
+    public function getTaxRate(): ?string
+    {
+        return $this->taxRate;
+    }
+
+    public function setTaxRate(?string $taxRate): static
+    {
+        $this->taxRate = $taxRate;
 
         return $this;
     }

@@ -2,11 +2,13 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\InvoiceLineRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: InvoiceLineRepository::class)]
+#[ApiResource]
 class InvoiceLine
 {
     #[ORM\Id]
@@ -15,21 +17,27 @@ class InvoiceLine
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
-    private ?string $quantity = null;
+    private ?string $quantity = '1.00';
 
     #[ORM\Column(type: Types::DECIMAL, precision: 12, scale: 2)]
-    private ?string $unitPrice = null;
+    private ?string $unitPrice = '0.00';
+
+    #[ORM\Column(type: Types::DECIMAL, precision: 5, scale: 2, options: ['default' => '21.00'])]
+    private ?string $taxRate = '21.00';
 
     #[ORM\Column(type: Types::DECIMAL, precision: 12, scale: 2)]
-    private ?string $subtotal = null;
+    private ?string $subtotal = '0.00';
 
     #[ORM\ManyToOne(inversedBy: 'invoiceLines')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Invoice $invoice = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Product $product = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $description = null;
 
     public function getId(): ?int
     {
@@ -56,6 +64,18 @@ class InvoiceLine
     public function setUnitPrice(string $unitPrice): static
     {
         $this->unitPrice = $unitPrice;
+
+        return $this;
+    }
+
+    public function getTaxRate(): ?string
+    {
+        return $this->taxRate;
+    }
+
+    public function setTaxRate(?string $taxRate): static
+    {
+        $this->taxRate = $taxRate;
 
         return $this;
     }
@@ -92,6 +112,18 @@ class InvoiceLine
     public function setProduct(?Product $product): static
     {
         $this->product = $product;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
 
         return $this;
     }

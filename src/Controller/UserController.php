@@ -87,7 +87,7 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/me', name: 'api_me', methods: ['GET'])]
+    #[Route('/me', name: 'api_me', methods: ['GET'], priority: 10)]
     public function me(): JsonResponse
     {
         $user = $this->getUser();
@@ -96,10 +96,27 @@ class UserController extends AbstractController
             return new JsonResponse(['error' => 'Unauthenticated'], 401);
         }
 
+        $companies = [];
+        foreach ($user->getCompanies() as $company) {
+            $companies[] = [
+                'id' => $company->getId(),
+                'name' => $company->getName(),
+                'taxId' => $company->getTaxId(),
+                'currency' => $company->getCurrency(),
+            ];
+        }
+
         return new JsonResponse([
             'id' => $user->getId(),
             'email' => $user->getEmail(),
             'roles' => $user->getRoles(),
+            'permissions' => $user->getPermissions(),
+            'companies' => $companies,
+            'defaultCompany' => $user->getDefaultCompany() ? [
+                'id' => $user->getDefaultCompany()->getId(),
+                'name' => $user->getDefaultCompany()->getName(),
+                'currency' => $user->getDefaultCompany()->getCurrency(),
+            ] : null,
             'is_active' => $user->isActive(),
             'last_login' => $user->getLastLogin() ? $user->getLastLogin()->format(\DateTime::ATOM) : null,
         ]);

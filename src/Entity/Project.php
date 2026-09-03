@@ -2,6 +2,10 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use App\Entity\Contract\TenantAwareInterface;
+use App\Entity\Traits\TenantTrait;
+use App\Entity\Traits\TimestampableTrait;
 use App\Repository\ProjectRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -9,8 +13,13 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ProjectRepository::class)]
-class Project
+#[ORM\HasLifecycleCallbacks]
+#[ApiResource]
+class Project implements TenantAwareInterface
 {
+    use TimestampableTrait;
+    use TenantTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -43,6 +52,7 @@ class Project
     public function __construct()
     {
         $this->tasks = new ArrayCollection();
+        $this->createdAt = new \DateTime();
     }
 
     public function getId(): ?int

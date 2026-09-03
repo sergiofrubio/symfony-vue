@@ -3,21 +3,18 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
-use App\Entity\Contract\TenantAwareInterface;
-use App\Entity\Traits\TenantTrait;
 use App\Entity\Traits\TimestampableTrait;
-use App\Repository\CustomerRepository;
+use App\Repository\CompanyRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: CustomerRepository::class)]
+#[ORM\Entity(repositoryClass: CompanyRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 #[ApiResource]
-class Customer implements TenantAwareInterface
+class Company
 {
     use TimestampableTrait;
-    use TenantTrait;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -27,27 +24,30 @@ class Customer implements TenantAwareInterface
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
+    #[ORM\Column(length: 50, unique: true)]
+    private ?string $taxId = null; // CIF/NIF/VAT
+
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $email = null;
 
-    #[ORM\Column(length: 20, nullable: true)]
+    #[ORM\Column(length: 50, nullable: true)]
     private ?string $phone = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $address = null;
 
-    #[ORM\Column(length: 50, nullable: true)]
-    private ?string $taxId = null; // NIF/CIF
+    #[ORM\Column(length: 3, options: ['default' => 'EUR'])]
+    private ?string $currency = 'EUR';
 
-    /**
-     * @var Collection<int, Invoice>
-     */
-    #[ORM\OneToMany(targetEntity: Invoice::class, mappedBy: 'customer')]
-    private Collection $invoices;
+    #[ORM\Column(type: 'boolean', options: ['default' => true])]
+    private bool $isActive = true;
+
+    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'companies')]
+    private Collection $users;
 
     public function __construct()
     {
-        $this->invoices = new ArrayCollection();
+        $this->users = new ArrayCollection();
         $this->createdAt = new \DateTime();
     }
 
@@ -64,7 +64,17 @@ class Customer implements TenantAwareInterface
     public function setName(string $name): static
     {
         $this->name = $name;
+        return $this;
+    }
 
+    public function getTaxId(): ?string
+    {
+        return $this->taxId;
+    }
+
+    public function setTaxId(string $taxId): static
+    {
+        $this->taxId = $taxId;
         return $this;
     }
 
@@ -76,7 +86,6 @@ class Customer implements TenantAwareInterface
     public function setEmail(?string $email): static
     {
         $this->email = $email;
-
         return $this;
     }
 
@@ -88,7 +97,6 @@ class Customer implements TenantAwareInterface
     public function setPhone(?string $phone): static
     {
         $this->phone = $phone;
-
         return $this;
     }
 
@@ -100,48 +108,53 @@ class Customer implements TenantAwareInterface
     public function setAddress(?string $address): static
     {
         $this->address = $address;
-
         return $this;
     }
 
-    public function getTaxId(): ?string
+    public function getCurrency(): ?string
     {
-        return $this->taxId;
+        return $this->currency;
     }
 
-    public function setTaxId(?string $taxId): static
+    public function setCurrency(string $currency): static
     {
-        $this->taxId = $taxId;
+        $this->currency = $currency;
+        return $this;
+    }
 
+    public function isActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): static
+    {
+        $this->isActive = $isActive;
         return $this;
     }
 
     /**
-     * @return Collection<int, Invoice>
+     * @return Collection<int, User>
      */
-    public function getInvoices(): Collection
+    public function getUsers(): Collection
     {
-        return $this->invoices;
+        return $this->users;
     }
 
-    public function addInvoice(Invoice $invoice): static
+    public function addUser(User $user): static
     {
-        if (!$this->invoices->contains($invoice)) {
-            $this->invoices->add($invoice);
-            $invoice->setCustomer($this);
+        if (!$this->users->contains($user)) {
+            $this->users->add($user);
+            $user->addCompany($this);
         }
-
         return $this;
     }
 
-    public function removeInvoice(Invoice $invoice): static
+    public function removeUser(User $user): static
     {
-        if ($this->invoices->removeElement($invoice)) {
-            if ($invoice->getCustomer() === $this) {
-                $invoice->setCustomer(null);
-            }
+        if ($this->users->removeElement($user)) {
+            $user->removeCompany($this);
         }
-
         return $this;
     }
 }

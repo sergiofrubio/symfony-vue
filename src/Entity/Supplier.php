@@ -2,14 +2,23 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use App\Entity\Contract\TenantAwareInterface;
+use App\Entity\Traits\TenantTrait;
+use App\Entity\Traits\TimestampableTrait;
 use App\Repository\SupplierRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: SupplierRepository::class)]
-class Supplier
+#[ORM\HasLifecycleCallbacks]
+#[ApiResource]
+class Supplier implements TenantAwareInterface
 {
+    use TimestampableTrait;
+    use TenantTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -39,6 +48,7 @@ class Supplier
     public function __construct()
     {
         $this->purchaseOrders = new ArrayCollection();
+        $this->createdAt = new \DateTime();
     }
 
     public function getId(): ?int
@@ -127,7 +137,6 @@ class Supplier
     public function removePurchaseOrder(PurchaseOrder $purchaseOrder): static
     {
         if ($this->purchaseOrders->removeElement($purchaseOrder)) {
-            // set the owning side to null (unless already changed)
             if ($purchaseOrder->getSupplier() === $this) {
                 $purchaseOrder->setSupplier(null);
             }
